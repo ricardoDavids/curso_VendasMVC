@@ -15,7 +15,7 @@ namespace Vendas_MVC.Controllers
             list.Add(new Department { Id = 1, Name = "Electronics" });
             list.Add(new Department { Id = 2, Name = "Fashion" });
 
-            return View();
+            return View(list);
         }
     }
 }
