@@ -20,7 +20,7 @@ namespace Vendas_MVC.Controllers
         public IActionResult About()
         {
             ViewData["Message"] = "Sales Web MVC App from C# Course";
-            ViewData["Professor"] =" Ricardo David";
+            ViewData["email"] =" Ricardo.david2020.new@gmail.com";
 
             return View();
         }
