@@ -1,6 +1,61 @@
-﻿@*
+﻿@model IEnumerable<Vendas_MVC.Models.Department> //  Aqui irá usar o Model e o IEnumerable é um conjunto de Department que vou poder percorre-la
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+@{
+    /*Aqui irá ser difinido o valor "Title" no ViewData como o valor de Index */
+
+    ViewData["Title"] = "Departments";
+}
+
+<h2>Departments</h2>
+
+/* Aqui foi criado um taghelper, o asp-action vai criar um link, apontando para acccao create do controlador Departments que foi quem chamou esta pagina;
+ só que o meu controlador ainda não tem a accao create, apenas tem accao Index */
+<p>
+
+    <a asp-action="Create">Create New</a>
+</p>
+
+
+// Depois a minha pagina vai ter uma tabela e essa tabela vai ter aqui os dados dos departamentos;
+<table class="table">
+    <thead> <!--Por exemplo na hora de construir aqui os labels da minha tabela
+                que é o cabeçalho,por exemplo o ID, Name, é construido através da instrução abaixo onde tem ARROBA HTML-->
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id) <!--Esta operação ela vai receber uma expressao lambda e serve para selecionar qual
+                                                            dado do meu model que eu vou querer exibir no cabeçalho da pagina
+                                                            O model nesta instrução vai ser a minha lista-->
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name) 
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <!--Aqui irei dar um foreach nesta coleção "Model" chamando cada elemento pelo apelido de item, -->
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                    <!--Aqui é para montar as linhas da tabela
+                vai pegar o parametro modelitem e depois usar os campos aqui do objecto
+                O item vem da construção da pag Razor ->me que faz foreach em uma coleção, aqui no caso a minha coleçao era o "Model
+                Esse "Model" pega justamente dessa coleção que vem do meu controlador -->
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { /*id=item.PrimaryKey */})
+                    @Html.ActionLink("Details", "Details", new { /*id=item.PrimaryKey */})
+                    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey*/})
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
 
 @{
 
