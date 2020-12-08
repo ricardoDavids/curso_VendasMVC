@@ -9,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Vendas_MVC.Data;
 
 namespace Vendas_MVC
 {
@@ -33,6 +35,9 @@ namespace Vendas_MVC
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.AddDbContext<Vendas_MVCContext>(options =>
+                    options.UseSqlServer(Configuration.GetConnectionString("Vendas_MVCContext")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
