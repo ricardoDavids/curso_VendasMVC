@@ -13,7 +13,10 @@ namespace Vendas_MVC.Data
             : base(options)
         {
         }
-
-        public DbSet<Vendas_MVC.Models.Department> Department { get; set; }
+        
+        // Adicionar as 3 Entidades
+        public DbSet<Department> Department { get; set; }
+        public DbSet<Seller> Seller { get; set; }
+        public DbSet<SalesRecord> SalesRecord { get; set; }
     }
 }
