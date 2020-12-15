@@ -12,6 +12,9 @@ namespace Vendas_MVC.Models
         public int Id { get; set; }
         public string Name { get; set; }
 
+       // Nota: Se eu quisesse acrecentar aqui mais um atributo?  public string Rating { get; set; } // para apagar
+        
+
         // Instanciar varios vendedores, porque o departamento tem varios vendedores, é necessario fazer essa composição
 
         public ICollection<Seller> Sellers { get; set; } = new List<Seller>(); /* e agora já vou criar essa coleção só para garantir que a aminha lista fica criada
@@ -26,10 +29,13 @@ namespace Vendas_MVC.Models
         {
 
         }
-        public Department(int id, string name) // não introduzir o atributo de collecções como no caso Sellers
+
+        // Apagar o atributo rating
+        public Department(int id, string name /*string rating*/) // não introduzir o atributo de collecções como no caso Sellers
         {
             Id = id;
             Name = name;
+           //Se quisesse acrescentar aqui Rating = rating; 
         }
 
         //Adicionar um vendedor
