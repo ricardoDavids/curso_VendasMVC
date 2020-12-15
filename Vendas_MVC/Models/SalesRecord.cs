@@ -18,7 +18,7 @@ namespace Vendas_MVC.Models
 
         }
 
-        public SalesRecord(int id,DateTime date, double amount, SalesStatus status)
+        public SalesRecord(int id,DateTime date, double amount, SalesStatus status, Seller seller)
         {
             Id = id;
             Date = date;

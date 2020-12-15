@@ -41,16 +41,20 @@ namespace Vendas_MVC
                     options.UseMySql(Configuration.GetConnectionString("Vendas_MVCContext"), builder =>
                     builder.MigrationsAssembly("Vendas_MVC")));
 
+
+            services.AddScoped<SeedingService>();  // Vamos registar o nosso serviço, ou seja,isto aqui registra o nosso serviço no sistema de injecçao de dependencia da aplicação.  
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env,SeedingService seedingService)
         {
-            if (env.IsDevelopment())
+            if (env.IsDevelopment()) /* Aqui vai testar se eu estou no perfil de desenvolv. eu irei fazer uma operação.
+                                      Entao neste caso como eu estou no perfil de desenvolvimento eu vou testar aqui o meu SeedingService*/
             {
                 app.UseDeveloperExceptionPage();
+                seedingService.Seed(); // Entao irei popular a minha bd caso ela nao esteja ainda.
             }
-            else
+            else // mas neste caso aqui se eu ja estiver no perfil de produção, eu irei fazer outras aplicações
             {
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
