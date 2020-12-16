@@ -1,9 +1,57 @@
-﻿@*
+﻿<!--Vamos ter que declarar um objecto model que é o arroba model, esse objecto vai corresponder ao objecto que passamos como argumento no metodo View ou seja quando foi escrito View(list), que no caso vai ser uma lista de Seller e ai vou ter que declarar o tipo desse objecto.Entao essa View vai receber IEnumerable... abaixo-->
+@model IEnumerable<Vendas_MVC.Models.Seller>
+
+@*
 *@
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Sellers";
 }
 
-<h2>Sellers</h2>
+<h2>@ViewData["Title"]</h2>
 
-<p>Sllers index page</p>
+<table class="table table-striped table-hover">  
+    <thead> <!--Aqui vai ser o cabeçalho-->
+    <tr class="success">
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Email)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.BirthDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.BaseSalary)
+        </th>
+        <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <!--para cada var item na minha colecção que está lá naquele model da View -->
+        @foreach (var item in Model)
+        {
+            <!--Agora vou criar uma linha <tr> e essa linha vai ter varias colunas que é o <td> para criar o conteudo de cada coluna baseado nesse item, irei ter que usar outro recurso que é o arrobaHTML -->
+            <tr>
+                <td>
+                    <!--Dentro deste DisplayFor irei dar o nome do atributo de modelItem que leva em item.Name -->
+                    @Html.DisplayFor(modelItem => item.Name) 
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BirthDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BaseSalary)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Details</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

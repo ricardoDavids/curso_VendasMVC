@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Vendas_MVC.Data;
+using Vendas_MVC.Services;
 
 namespace Vendas_MVC
 {
@@ -43,6 +44,7 @@ namespace Vendas_MVC
 
 
             services.AddScoped<SeedingService>();  // Vamos registar o nosso serviço, ou seja,isto aqui registra o nosso serviço no sistema de injecçao de dependencia da aplicação.  
+            services.AddScoped<SellerService>(); // o nosso serviço agora pode ser injectado noutras classes
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
