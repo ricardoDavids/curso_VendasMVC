@@ -47,5 +47,13 @@ namespace Vendas_MVC.Services
             // NOta: por enquanto isto vai ser uma operação sincrona -> ou seja, _context.Seller.ToList vai rodar o acesso ao banco de dados e a aplicação vai ficar bloqueada esperando essa operação terminar
 
         }
+
+        public void Insert(Seller obj) // Aqui criamos um metodo para inserir um novo vendedor no banco de dados
+        {
+            _context.Add(obj);
+            _context.SaveChanges();
+        }
+
+
     }
 }
