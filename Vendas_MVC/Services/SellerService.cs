@@ -50,6 +50,7 @@ namespace Vendas_MVC.Services
 
         public void Insert(Seller obj) // Aqui criamos um metodo para inserir um novo vendedor no banco de dados
         {
+            obj.Department = _context.Department.First(); // solução provisória só para nao dar erro quando tentar inserir mais um vendedor por causa do DepartmentId que está acusando null na db e assim vai buscar o DepartmentId=1
             _context.Add(obj);
             _context.SaveChanges();
         }

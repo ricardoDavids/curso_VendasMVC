@@ -19,6 +19,9 @@ namespace Vendas_MVC.Controllers
         }
 
 
+
+
+
         public IActionResult Index() // Agora vamos criar uma pagina de Index que vai ser a "View" Entao temos que ir na pasta da "Views" e criar uma subpasta "Sellers" e dentro dessa subpasta adicionar a View Name com template vazio
                                      /* ESSE Index vai ter que chamar a nossa operação FindAll lá do SellerService e para fazer isso, vamos ter que declarar em 1º lugar uma dependencia para o seller service */
             
@@ -37,17 +40,17 @@ namespace Vendas_MVC.Controllers
         }
 
 
+
+
+
+
+
         // Vamos agora criar uma nova acção:
 
         public IActionResult Create()
         {
             return View();
         }
-
-
-
-
-
 
 
 

@@ -16,9 +16,16 @@ namespace Vendas_MVC.Models
         public DateTime BirthDate { get; set; }
         public double BaseSalary { get; set; }
         public Department Department { get; set; } // criamos uma propriedade department com o nome da propriedade department
+        public int DepartmentId { get; set; }
+
+
 
         // proxima etapa associar o vendedor com as vendas(dentro do vendedor vou ter um ICOLLECTION DE SALES RECORD)
         public ICollection<SalesRecord> Sales { get; set; } = new List<SalesRecord>(); // Aqui está a nossa associação para muitos, ou seja um vendedor pode fazer varias vendas(Sales)
+
+
+
+
 
         public Seller()
         {
