@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Vendas_MVC.Models;
 using Vendas_MVC.Data;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace Vendas_MVC.Services
@@ -57,11 +58,26 @@ namespace Vendas_MVC.Services
 
 
 
+
+
+
         public Seller FindById(int id) // Vai ter que retornar o vendedor que possui esse id que está dentro parenteses nesta linha
+
         {
             //CHAMAMOS a operação LINQ FirstOrDefault daquele objecto obj cujo obj.id seja igual ao id que eu estou informando como parametro a seguir a funcao "FindById"
-            return _context.Seller.FirstOrDefault(obj => obj.Id == id);
+            return _context.Seller.Include(obj => obj.Department).FirstOrDefault(obj => obj.Id == id); /* Isto aqui por padrao carrega simplesmente o "Id" do Vendedor
+                                                                            Para carregar o departamento junto, eu vou ter que dar uma instrução
+                                                                             especifica aqui para o meu EntityFramework para ele fazer o Join das tabelas,
+                                                                              ou seja, para ele buscar tambem o departamento.
+                                                                               vou mostrar em baixo como era antes sem a inclusão do departamento*/
+
+
+
+            // return _context.Seller.FirstOrDefault(obj => obj.Id == id); // Sem inclusão do departamento quando viamos na tela os detalhes, nao mostrava qual o departamento
         }
+
+
+
 
         public void Remove(int id)
         {

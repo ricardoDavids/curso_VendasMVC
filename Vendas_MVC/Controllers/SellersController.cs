@@ -144,5 +144,26 @@ namespace Vendas_MVC.Controllers
 
 
 
+        // Vamos criar aqui uma acccao "Details"
+        // Essa accao vai receber um Id opcional
+        /* Alogica aqui vai ser identica á logica do Remove, porque vou ter que verificar se o "Id" é null,
+           depois buscar o meu objecto se ele for null, terei que tambem dar um "NotFound" e depois eu irei retornar o objecto*/
+
+        public IActionResult Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var obj = _sellerService.FindById(id.Value);
+            if (obj == null)
+            {
+                return NotFound();
+            }
+
+            return View(obj);
+        }
+
     }
 }
