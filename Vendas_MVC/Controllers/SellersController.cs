@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Vendas_MVC.Services;
 using Vendas_MVC.Models;
+using Vendas_MVC.Models.ViewModels;
 
 namespace Vendas_MVC.Controllers
 {
@@ -12,10 +13,16 @@ namespace Vendas_MVC.Controllers
     {
 
         private readonly SellerService _sellerService;
+        private readonly DepartmentService _departmentService; /* Os "SellersController" tambem vai ter uma dependencia para o "DepartmentService" 
+                                                                  Agora vou ter que acrescentar esse _departmentService no constructor para que,
+                                                                  ele possa ser injectado no meu objecto */
 
-        public SellersController(SellerService sellerService) // Constructor aqui feito para injeccao da dependencia 
+
+
+        public SellersController(SellerService sellerService, DepartmentService departmentService) // Constructor aqui feito para injeccao da dependencia 
         {
             _sellerService = sellerService;
+            _departmentService = departmentService; // _departmentService da Classe recebe o departmentService do Argumento;
         }
 
 
@@ -45,11 +52,21 @@ namespace Vendas_MVC.Controllers
 
 
 
-        // Vamos agora criar uma nova acção:
+        // 1- Vamos agora criar uma nova acção:
+       //  2- Agora Vamos ter que tambem atualizar o nosso metodo create, que é o metodo que vai abrir para nos o formulario para registrar um vendedor
+             /*2.1 - Vou ter que atualizar os departamentos; */
+
 
         public IActionResult Create()
         {
-            return View();
+            var departments = _departmentService.FindAll(); //O metodo FindAll serve Para ele buscar do banco de dados todos os departamentos naquele DepartmentService
+                                                            //Agora vamos criar novo objecto do nosso View Model que recebe um novo "SellerFormViewModel" que tem dois dados, os departamentos e os vendedores 
+            var viewModel = new SellerFormViewModel { Departments = departments };// No caso aqui do departamentos já vou iniciar um objecto com a "lista" que acabamos de buscar na linha de cima onde tem var departments;
+            return View(viewModel); // Feito isto vou passar este objecto ViewModel para minha View
+
+
+
+            // Agora as minha tela de registro quando ela for acionada pela 1 vez ela já vai receber este objecto "viewModel" com os departamentos populados
         }
 
 

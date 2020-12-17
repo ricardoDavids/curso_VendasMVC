@@ -25,6 +25,9 @@ namespace Vendas_MVC
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
+
+
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<CookiePolicyOptions>(options =>
@@ -33,6 +36,8 @@ namespace Vendas_MVC
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+
+
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
@@ -45,6 +50,7 @@ namespace Vendas_MVC
 
             services.AddScoped<SeedingService>();  // Vamos registar o nosso serviço, ou seja,isto aqui registra o nosso serviço no sistema de injecçao de dependencia da aplicação.  
             services.AddScoped<SellerService>(); // o nosso serviço agora pode ser injectado noutras classes
+            services.AddScoped<DepartmentService>(); // Injeccao de dependencia no sistema
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

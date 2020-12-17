@@ -18,8 +18,13 @@ namespace Vendas_MVC.Models
         // Instanciar varios vendedores, porque o departamento tem varios vendedores, é necessario fazer essa composição
 
         public ICollection<Seller> Sellers { get; set; } = new List<Seller>(); /* e agora já vou criar essa coleção só para garantir que a aminha lista fica criada
-                                                                                  Aqui acabamos de implementar o "Department" com o "Seller"  Sellers --> é uma propriedade*/
+                                                                                  Aqui acabamos de implementar o "Department" com o <"Seller">  Sellers --> é uma propriedade*/
                                                                                 // Sellers --> é tambem a minha lista de vendedores
+
+
+
+
+
 
         // Agora temos que ir na classe Seller implementar a composicção de 1 Seller para 1 departamento
 
@@ -30,6 +35,9 @@ namespace Vendas_MVC.Models
 
         }
 
+
+
+
         // Apagar o atributo rating
         public Department(int id, string name /*string rating*/) // não introduzir o atributo de collecções como no caso Sellers
         {
@@ -38,11 +46,19 @@ namespace Vendas_MVC.Models
            //Se quisesse acrescentar aqui Rating = rating; 
         }
 
+
+
+
         //Adicionar um vendedor
         public void AddSeller(Seller seller) // para adicionar um vendedor
         {
             Sellers.Add(seller); // peguei a minha lista de vendedores( Sellers) e adicionei como argumento o seller
         }
+
+
+
+
+
 
         // Total de Vendas do departmento para intervalo de datas?
         // R:. Vou ter que pegar a lista de vendedores, todos os vendedores desse departamento e somar o total de vendas de cada vendedor nesse intervalo de tempo 
