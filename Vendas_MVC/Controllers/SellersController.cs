@@ -30,10 +30,10 @@ namespace Vendas_MVC.Controllers
 
 
         public IActionResult Index() // Agora vamos criar uma pagina de Index que vai ser a "View" Entao temos que ir na pasta da "Views" e criar uma subpasta "Sellers" e dentro dessa subpasta adicionar a View Name com template vazio
-                                     /* ESSE Index vai ter que chamar a nossa operação FindAll lá do SellerService e para fazer isso, vamos ter que declarar em 1º lugar uma dependencia para o seller service */
-            
+        /* ESSE Index vai ter que chamar a nossa operação FindAll lá do SellerService e para fazer isso, vamos ter que declarar em 1º lugar uma dependencia para o seller service */
+
         {
-            
+
             // chamar a nossa operação findAll lá do SellerService
             var list = _sellerService.FindAll(); // Esta operação vai me retornar uma lista de Seller e depois vou passar essa lista como argumento no meu metodo View, para o metodo gerar um "IActionResult" tendo essa lista aqui
             return View(list);
@@ -53,8 +53,8 @@ namespace Vendas_MVC.Controllers
 
 
         // 1- Vamos agora criar uma nova acção:
-       //  2- Agora Vamos ter que tambem atualizar o nosso metodo create, que é o metodo que vai abrir para nos o formulario para registrar um vendedor
-             /*2.1 - Vou ter que atualizar os departamentos; */
+        //  2- Agora Vamos ter que tambem atualizar o nosso metodo create, que é o metodo que vai abrir para nos o formulario para registrar um vendedor
+        /*2.1 - Vou ter que atualizar os departamentos; */
 
 
         public IActionResult Create()
@@ -94,6 +94,55 @@ namespace Vendas_MVC.Controllers
             _sellerService.Insert(seller); // Aqui chamamos o metodo que criamos no "SellerService", repassando este objecto(seller) para lá.
             return RedirectToAction(nameof(Index)); // Agora vou redirecionar a minha requesição para accao "Index" que é a accao que vai mostrar novamente a tela principal do meu "CRUD" de vendedores
         }
+
+
+
+
+        public IActionResult Delete(int? id) // Este delete vai ser opcional e para isso vou ter que testar
+        {
+            if (id == null)
+            {
+                // Se o id for nulo signiica que a requesição foi feita de uma forma indevida
+                return NotFound(); // Este objecto NotFound ele cria lá uma resposta básica mas depois vamos personalizar isto com uma pagina de erro
+            }
+
+
+
+
+
+
+
+
+            // Proximo passo é pegar quem é este objecto que eu estou mandando deletar
+            var obj = _sellerService.FindById(id.Value); // Pronto, busquei do banco de dados 
+            if (obj == null)// Agora esse id pode ser um id que nao existe, se nao exisir o meu FindById torna Nullo
+            {
+                return NotFound();
+            }
+
+
+
+
+
+
+            // Agora se tudo deu certo eu vou mandar o meu metodo retornar uma view passsando esse objecto como argumento
+            return View(obj);
+        }
+
+
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Delete(int id)
+        {
+            _sellerService.Remove(id);
+            return RedirectToAction(nameof(Index));
+        }
+
+
+
+
 
     }
 }

@@ -56,5 +56,20 @@ namespace Vendas_MVC.Services
         }
 
 
+
+        public Seller FindById(int id) // Vai ter que retornar o vendedor que possui esse id que está dentro parenteses nesta linha
+        {
+            //CHAMAMOS a operação LINQ FirstOrDefault daquele objecto obj cujo obj.id seja igual ao id que eu estou informando como parametro a seguir a funcao "FindById"
+            return _context.Seller.FirstOrDefault(obj => obj.Id == id);
+        }
+
+        public void Remove(int id)
+        {
+
+            /* Vou fazer aqui uma implementação da seguinte maneira: 1 vou pegar o objecto (obj) chamando o _context.Seller.Find passando o id para dentro do parenteses */
+            var obj = _context.Seller.Find(id);
+            _context.Seller.Remove(obj); // Com o objecto na mao eu vou chamar o _context.Seller. remove do nosso DbSet, entao vou falar para remover esse objecto (obj) do dbSet 
+            _context.SaveChanges(); // Agora tenho que confirmar essa alteração para o EntityFramework efectiva-la lá no db
+        }
     }
 }
