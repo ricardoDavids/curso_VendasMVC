@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Vendas_MVC.Models;
 using Vendas_MVC.Data;
 using Microsoft.EntityFrameworkCore;
+using Vendas_MVC.Services.Exceptions;
 
 
 namespace Vendas_MVC.Services
@@ -73,7 +74,7 @@ namespace Vendas_MVC.Services
 
 
 
-            // return _context.Seller.FirstOrDefault(obj => obj.Id == id); // Sem inclusão do departamento quando viamos na tela os detalhes, nao mostrava qual o departamento
+            // return _context.Seller.FirstOrDefault(obj => obj.Id == id); // Sem inclusão do departamento quando viamos na tela os detalhes, nao mostrava qual o departamento associado
         }
 
 
@@ -86,6 +87,73 @@ namespace Vendas_MVC.Services
             var obj = _context.Seller.Find(id);
             _context.Seller.Remove(obj); // Com o objecto na mao eu vou chamar o _context.Seller. remove do nosso DbSet, entao vou falar para remover esse objecto (obj) do dbSet 
             _context.SaveChanges(); // Agora tenho que confirmar essa alteração para o EntityFramework efectiva-la lá no db
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+        // Agora vamos incluir uma operação "Update" , no caso um objecto do tipo "Seller"
+        public void Update(Seller obj) /* o que é que vai ser "Update" um objecto do tipo Seller?
+                                          A primeira coisa que vou ter que fazer é testar se esse "id" desse objecto já existe no banco.
+                                           Porque como estou atualizando o "id" desse objecto, já tem que existir*/
+
+            /* Para fazer isto eu vou ter que chamar o meu _context.Seller.Any ( o any serve para falar se existe algum registo no banco de dados com a condição que voçe irá colocar dentro dos ()
+                x que leva em x.id igual ao obj.Id.
+                 Então eu estou testando se ja existe no banco de dados algum vendedor x cujo o "id" seja igual ao "id" do meu objecto*/
+
+
+
+        {
+            if (!_context.Seller.Any(x => x.Id == obj.Id)) // Se nao existir vou ter que lançar uma excepção
+            {
+                throw new NotFoundException(" I did not found");
+            }
+            // Se passar por esse If é porque já existe esse objecto la na bd e irei apenas atualizar;
+
+            // Entao agora para atualizar e salvar a atualização vou fazer um bloco try e depois um catch para capturar _context.Update(obj) e depois save
+
+
+            /* Mas agora aqui tem um problema quando voçe chama a operaç~ºao atualizar no banco de dados, este pode retornar uma excepção de conflito de concorrencia,
+                Se esse erro ocorrer no banco de dados, o Entity Framework vai produzir uma excepção chamada dbupdate, entao iremos colocar um bloco try  e um catch para capturar
+                 uma possivel excepção de concorrencia do banco de dados.
+                  No caso se acontecer ocorrer a tal excepção de concorrencia de dados ai vou ter que lançar uma nova excepcao de serviços e ai irei colocar uma "messagem" que veio do banco de dados*/
+            try
+            {
+                _context.Update(obj);
+                _context.SaveChanges();
+            }
+            catch(DbUpdateConcurrencyException e)
+            {
+                throw new DbConcurrencyException(e.Message);
+            }
+            
+
+
+
+
+
+            // Nota: Conclusão
+
+            /* O que é que eu estou fazendo com o try e  catch?
+                Eu estou interceptando uma excepção no caso do "catch" do nivel de acessos a dados e depois estou relançando essa excepção só que lançando essa minha excepção a nivel de serviços
+            
+             A minha camada de serviço não vai propagar, difundir, uma excepção do nivel de acesso a dados, se uma excepção de nivel de acesso a dados acontecer, a minha camada de serviços ela vai lançar
+             uma excepção da camada dela. e ai o meu controlador que no caso vai ser o "SellerController", ele vai ter que lidar só com as excepçõs da camada de serviços
+            
+
+
+
+             Nota muito importante:
+             
+             O controlador conversa com a camada de serviços, excepções de nivel de acesso a dados são capturadas pelo o serviço e relançadas nas formas de excepções de serviço para o controlador*/
         }
     }
 }

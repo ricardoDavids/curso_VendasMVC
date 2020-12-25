@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Vendas_MVC.Services;
 using Vendas_MVC.Models;
 using Vendas_MVC.Models.ViewModels;
+using Vendas_MVC.Services.Exceptions;
 
 namespace Vendas_MVC.Controllers
 {
@@ -146,10 +147,10 @@ namespace Vendas_MVC.Controllers
 
         // Vamos criar aqui uma acccao "Details"
         // Essa accao vai receber um Id opcional
-        /* Alogica aqui vai ser identica á logica do Remove, porque vou ter que verificar se o "Id" é null,
+        /* A logica aqui vai ser identica á logica do Remove, porque vou ter que verificar se o "Id" é null,
            depois buscar o meu objecto se ele for null, terei que tambem dar um "NotFound" e depois eu irei retornar o objecto*/
 
-        public IActionResult Details(int? id)
+        public IActionResult Details(int? id) // o ? quer dizer que é um "id" opcional
         {
             if (id == null)
             {
@@ -164,6 +165,73 @@ namespace Vendas_MVC.Controllers
 
             return View(obj);
         }
+
+
+
+        // Agora vamos criar uma acção "Edit" serve para abrir a tela para editar o nosso vendedor e recebe um id como argumento e o opcional é só para evitar de acontecer algum erro de execução porque na verdade o id é obrigatorio
+
+        public IActionResult Edit(int? id )
+        {
+            if( id == null) // Aqui testei se o "id" nao existe
+            {
+                return NotFound();
+            }
+
+
+
+            // Agor é testar se realmente esse "id" existe ou nao no nosso Banco de dados
+
+            var obj = _sellerService.FindById(id.Value); // passando este "id" como argumento.
+            if (obj == null) // Agora vou testar se obj que eu tentei buscar for igual a null é pk o "id" não existia no banco de dados, entao tabem irei mandar retornar o NotFound
+            {
+                return NotFound();
+            }
+
+
+
+            // se as anteriores condições passarem entao é porque vou ter que abrir uma tela de edição e par aisso vou ter que carregar os departamentos para povoar a minha caixa de eleição
+
+            List<Department> departments = _departmentService.FindAll();
+
+            //Agora vou criar um objecto do tipo SellerFormViewModel e depois vou passar os dados para ele, o "Seller agora vai ser iniciado com o "obj" que é o objecto(na linha acima " var obj= _sellerService.FindById(id.Value); " que buscamos no banco de dados.
+            // O Departments vai ser igual a esta lista de departments que acabei de carregar
+
+            SellerFormViewModel viewModel = new SellerFormViewModel { Seller = obj, Departments = departments }; // Instanciamos o nosso ViewModel e entao agora vamos retornar uma view passando esse "ViewModel" como argumento
+
+            return View(viewModel);
+        }
+
+
+
+
+        /* Criar a accao "Edit" para o metodo POST*/
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(int id, Seller seller)
+        {
+            if(id != seller.Id) /* Se o "id" que vem aqui no parametro do metdodo for diferente do seller.id significa que alguma coisa está errada.
+                                    O "id" do vendedor que eu estou atualizando não pode ser diferente do "id" da URL da requesição, se isso acontecer irei chamar o "return BadRequest"*/
+            {
+                return BadRequest();
+            }
+
+            try // a chamada está sendo colocada dentro de um "try"
+            {
+                _sellerService.Update(seller); // Aqui a chamada do update ela pode lançar excepções, tanto um NotFoundException quanto um DbConcurrencyException
+                return RedirectToAction(nameof(Index));
+            }
+
+            catch (NotFoundException)
+            {
+                return NotFound();
+            }
+            // Se acontecer tambem aquela excepção abaixo eu irei dar aqui provisoriamente um return BadRequest
+            catch (DbConcurrencyException)
+            {
+                return BadRequest(); 
+            }
+        }
+
 
     }
 }
