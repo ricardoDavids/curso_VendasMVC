@@ -7,6 +7,7 @@ using Vendas_MVC.Services;
 using Vendas_MVC.Models;
 using Vendas_MVC.Models.ViewModels;
 using Vendas_MVC.Services.Exceptions;
+using System.Diagnostics;
 
 namespace Vendas_MVC.Controllers
 {
@@ -104,7 +105,14 @@ namespace Vendas_MVC.Controllers
             if (id == null)
             {
                 // Se o id for nulo signiica que a requesição foi feita de uma forma indevida
-                return NotFound(); // Este objecto NotFound ele cria lá uma resposta básica mas depois vamos personalizar isto com uma pagina de erro
+                // return NotFound(); // Este objecto NotFound ele cria lá uma resposta básica mas depois vamos personalizar isto com uma pagina de erro
+
+
+                /* Agora aqui vamos substituir o metodo NotFound por redirectToAction e vamos redirecionar para qual acção nos vamos redirecionar? para accao Error e
+                    essa acção Error recebe um argumento que é a mensagem, para pssar esse argumento, eu vou criar aqui um objecto anonimo, entao irei fazer um "new"
+                     e depois colocar a mensagem que eu quiser.
+                      No caso de eu deletar e o "id" não existir, irei colocar "id not found"*/
+                return RedirectToAction(nameof(Error), new { message = "Id not provided" });
             }
 
 
@@ -118,7 +126,7 @@ namespace Vendas_MVC.Controllers
             var obj = _sellerService.FindById(id.Value); // Pronto, busquei do banco de dados 
             if (obj == null)// Agora esse id pode ser um id que nao existe, se nao exisir o meu FindById torna Nullo
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not found" });
             }
 
 
@@ -154,13 +162,13 @@ namespace Vendas_MVC.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not provided" });
             }
 
             var obj = _sellerService.FindById(id.Value);
             if (obj == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not found" });
             }
 
             return View(obj);
@@ -174,7 +182,7 @@ namespace Vendas_MVC.Controllers
         {
             if( id == null) // Aqui testei se o "id" nao existe
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not provided" });
             }
 
 
@@ -184,7 +192,7 @@ namespace Vendas_MVC.Controllers
             var obj = _sellerService.FindById(id.Value); // passando este "id" como argumento.
             if (obj == null) // Agora vou testar se obj que eu tentei buscar for igual a null é pk o "id" não existia no banco de dados, entao tabem irei mandar retornar o NotFound
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not found" });
             }
 
 
@@ -212,7 +220,7 @@ namespace Vendas_MVC.Controllers
             if(id != seller.Id) /* Se o "id" que vem aqui no parametro do metdodo for diferente do seller.id significa que alguma coisa está errada.
                                     O "id" do vendedor que eu estou atualizando não pode ser diferente do "id" da URL da requesição, se isso acontecer irei chamar o "return BadRequest"*/
             {
-                return BadRequest();
+                return RedirectToAction(nameof(Error), new { message = "Id mismatch" });
             }
 
             try // a chamada está sendo colocada dentro de um "try"
@@ -221,17 +229,33 @@ namespace Vendas_MVC.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            catch (NotFoundException)
+            catch (ApplicationException e)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = e.Message });
             }
             // Se acontecer tambem aquela excepção abaixo eu irei dar aqui provisoriamente um return BadRequest
-            catch (DbConcurrencyException)
-            {
-                return BadRequest(); 
-            }
-        }
+            
 
+
+           
+        }
+        /* Essa acção é para retornar o "ViewError*/
+
+        public IActionResult Error(string message)
+        {
+            /*A primeira coisa a fazer é instanciar um viewModel que vai ser um new ErrorViewModel(aquela classe que nós mexemos) nesse ViewModel, o atributo message dele vai ser essa 
+              mensagem que deu como argumento*/
+
+            var viewModel = new ErrorViewModel
+            {
+                Message = message,
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier/*E quem vai ser o meu RequestId da minha requesiçao? vou ter que chamar a classe activity... isto depois é para pegar o "id" interno da requesição*/
+            };
+
+            // Agora já criamos o nosso objecto viewModel, vamos fazer um return
+
+            return View(viewModel);
+        }
 
     }
 }
