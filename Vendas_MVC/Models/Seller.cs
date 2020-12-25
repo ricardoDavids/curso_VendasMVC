@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,8 +13,22 @@ namespace Vendas_MVC.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
+
+
+        [DataType(DataType.EmailAddress)] // vai tranformar o email em formato de link 
         public string Email { get; set; }
+
+
+
+        [Display(Name = "Birth Date")]
+        [DataType(DataType.Date)] // Aqui é só para aparecer a Data na hora de escolher o dia, mês e ano e nao optar pelo o horario
+        [DisplayFormat(DataFormatString ="{0:dd/MM/yyyy}")]
         public DateTime BirthDate { get; set; }
+
+
+
+        [Display (Name = "Base Salary")]
+        [DisplayFormat(DataFormatString ="{0:F2}")]
         public double BaseSalary { get; set; }
         public Department Department { get; set; } // criamos uma propriedade department com o nome da propriedade department
         public int DepartmentId { get; set; }
