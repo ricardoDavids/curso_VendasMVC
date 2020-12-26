@@ -90,10 +90,18 @@ namespace Vendas_MVC.Controllers
 
 
 
-        public IActionResult Create(Seller seller)
+        public IActionResult Create(Seller seller) // Como eu faço para incluir aqui um teste para testar se esse (Seller seller) é valido ou não? vou ter que incluir abaixo um "if"
         {
+            if (!ModelState.IsValid) // Este teste aqui serve para testar se o modelo foi validado, se ele nao foi validado, simplesmente vou retornar a mesma View(tela) que é o create, repassando o meu objecto (seller);
+            {
+                var departments = _departmentService.FindAll(); // carreguei aqui os departamentos
+                var viewModel = new SellerFormViewModel { Seller = seller, Departments = departments } // Aqui o atributo departments vai ser a lista dos departments que eu carreguei
+                return View(viewModel);
+            }
+
+
             // Agora vamos implementar aqui a accao de inserir o create(Seller seller) no banco de dados;
-            _sellerService.Insert(seller); // Aqui chamamos o metodo que criamos no "SellerService", repassando este objecto(seller) para lá.
+            _sellerService.Insert(seller); // Aqui chamamos o metodo que criamos no "SellerService", repassando este objecto(seller).
             return RedirectToAction(nameof(Index)); // Agora vou redirecionar a minha requesição para accao "Index" que é a accao que vai mostrar novamente a tela principal do meu "CRUD" de vendedores
         }
 
@@ -217,7 +225,17 @@ namespace Vendas_MVC.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, Seller seller)
         {
-            if(id != seller.Id) /* Se o "id" que vem aqui no parametro do metdodo for diferente do seller.id significa que alguma coisa está errada.
+
+            if (!ModelState.IsValid) // Este teste aqui serve para testar se o modelo foi validado, se ele nao foi validado, simplesmente vou retornar a mesma View(tela) que é o create, repassando o meu objecto (seller);
+            {
+                var departments = _departmentService.FindAll(); // carreguei aqui os departamentos
+                var viewModel = new SellerFormViewModel { Seller = seller , Departments= departments} // Aqui o atributo departments vai ser a lista dos departments que eu carreguei
+                return View(viewModel);
+            }
+
+
+
+            if (id != seller.Id) /* Se o "id" que vem aqui no parametro do metdodo for diferente do seller.id significa que alguma coisa está errada.
                                     O "id" do vendedor que eu estou atualizando não pode ser diferente do "id" da URL da requesição, se isso acontecer irei chamar o "return BadRequest"*/
             {
                 return RedirectToAction(nameof(Error), new { message = "Id mismatch" });
