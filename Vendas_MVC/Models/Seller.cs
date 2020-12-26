@@ -27,6 +27,7 @@ namespace Vendas_MVC.Models
 
 
         [Required(ErrorMessage = "{0} required")]
+        [EmailAddress(ErrorMessage = "Enter a valid email")]
         [DataType(DataType.EmailAddress)] // vai tranformar o email em formato de link 
         public string Email { get; set; }
 

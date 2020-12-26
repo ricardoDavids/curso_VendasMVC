@@ -95,7 +95,7 @@ namespace Vendas_MVC.Controllers
             if (!ModelState.IsValid) // Este teste aqui serve para testar se o modelo foi validado, se ele nao foi validado, simplesmente vou retornar a mesma View(tela) que é o create, repassando o meu objecto (seller);
             {
                 var departments = _departmentService.FindAll(); // carreguei aqui os departamentos
-                var viewModel = new SellerFormViewModel { Seller = seller, Departments = departments } // Aqui o atributo departments vai ser a lista dos departments que eu carreguei
+                var viewModel = new SellerFormViewModel { Seller = seller, Departments = departments }; // Aqui o atributo departments vai ser a lista dos departments que eu carreguei
                 return View(viewModel);
             }
 
@@ -229,7 +229,7 @@ namespace Vendas_MVC.Controllers
             if (!ModelState.IsValid) // Este teste aqui serve para testar se o modelo foi validado, se ele nao foi validado, simplesmente vou retornar a mesma View(tela) que é o create, repassando o meu objecto (seller);
             {
                 var departments = _departmentService.FindAll(); // carreguei aqui os departamentos
-                var viewModel = new SellerFormViewModel { Seller = seller , Departments= departments} // Aqui o atributo departments vai ser a lista dos departments que eu carreguei
+                var viewModel = new SellerFormViewModel { Seller = seller, Departments = departments }; // Aqui o atributo departments vai ser a lista dos departments que eu carreguei
                 return View(viewModel);
             }
 
