@@ -155,8 +155,16 @@ namespace Vendas_MVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-           await _sellerService.RemoveAsync(id);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                await _sellerService.RemoveAsync(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch(IntegrityException e) // Se acontecer uma excepção de integrityException eu vou redericionar para pagina de erro com a msg dessa excepção.
+            {
+                return RedirectToAction(nameof(Error), new { message = e.Message });
+            }
+           
         }
 
 

@@ -89,11 +89,29 @@ namespace Vendas_MVC.Services
 
         public async Task RemoveAsync(int id)
         {
+            // Vamos colocar esta operação de Remove dentro de um bloco "Try"
 
-            /* Vou fazer aqui uma implementação da seguinte maneira: 1 vou pegar o objecto (obj) chamando o _context.Seller.Find passando o id para dentro do parenteses */
-            var obj =await _context.Seller.FindAsync(id);
-            _context.Seller.Remove(obj); // Com o objecto na mao eu vou chamar o _context.Seller. remove do nosso DbSet, entao vou falar para remover esse objecto (obj) do dbSet 
-            await _context.SaveChangesAsync(); // Agora tenho que confirmar essa alteração para o EntityFramework efectiva-la lá no db
+            try
+            {
+                /* Vou fazer aqui uma implementação da seguinte maneira: 1 vou pegar o objecto (obj) chamando o _context.Seller.Find passando o id para dentro do parenteses */
+                var obj = await _context.Seller.FindAsync(id);
+                _context.Seller.Remove(obj); // Com o objecto na mao eu vou chamar o _context.Seller. remove do nosso DbSet, entao vou falar para remover esse objecto (obj) do dbSet 
+                await _context.SaveChangesAsync(); // Agora tenho que confirmar essa alteração para o EntityFramework efectiva-la lá no db
+            }
+
+
+
+
+            // Agora vou colocar o bloco catch para capturar uma possivel DbUpdateException
+            catch (DbUpdateException e)
+            {
+                /* e agora o que vamos fazer quando essa excepção acontecer, vamos lançar uma nova excepção que vai ser IntegrityException,
+                 * que é a nossa excepção de serviço passando para ela a messangem que veio nesta excepção aqui do entityFramwork */
+
+                throw new IntegrityException("Can´t delete seller because he/she has sales");
+            }
+
+           
         }
 
 
@@ -145,7 +163,7 @@ namespace Vendas_MVC.Services
                 throw new DbConcurrencyException(e.Message);
             }
             
-            // Fuck
+            
 
 
 
