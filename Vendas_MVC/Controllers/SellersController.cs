@@ -31,13 +31,15 @@ namespace Vendas_MVC.Controllers
 
 
 
-        public IActionResult Index() // Agora vamos criar uma pagina de Index que vai ser a "View" Entao temos que ir na pasta da "Views" e criar uma subpasta "Sellers" e dentro dessa subpasta adicionar a View Name com template vazio
+        public async Task<IActionResult> Index() // Agora vamos criar uma pagina de Index que vai ser a "View" Entao temos que ir na pasta da "Views" e criar uma subpasta "Sellers" e dentro dessa subpasta adicionar a View Name com template vazio
         /* ESSE Index vai ter que chamar a nossa operação FindAll lá do SellerService e para fazer isso, vamos ter que declarar em 1º lugar uma dependencia para o seller service */
 
         {
 
             // chamar a nossa operação findAll lá do SellerService
-            var list = _sellerService.FindAll(); // Esta operação vai me retornar uma lista de Seller e depois vou passar essa lista como argumento no meu metodo View, para o metodo gerar um "IActionResult" tendo essa lista aqui
+
+            // A nossa indicação "await" para o metodo esperar a resposta dessa chamada que é assincrona
+            var list = await _sellerService.FindAllAsync(); // Esta operação vai me retornar uma lista de Seller e depois vou passar essa lista como argumento no meu metodo View, para o metodo gerar um "IActionResult" tendo essa lista aqui
             return View(list);
 
 
@@ -59,9 +61,9 @@ namespace Vendas_MVC.Controllers
         /*2.1 - Vou ter que atualizar os departamentos; */
 
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            var departments = _departmentService.FindAll(); //O metodo FindAll serve Para ele buscar do banco de dados todos os departamentos naquele DepartmentService
+            var departments =await _departmentService.FindAllAsync(); //O metodo FindAll serve Para ele buscar do banco de dados todos os departamentos naquele DepartmentService
                                                             //Agora vamos criar novo objecto do nosso View Model que recebe um novo "SellerFormViewModel" que tem dois dados, os departamentos e os vendedores 
             var viewModel = new SellerFormViewModel { Departments = departments };// No caso aqui do departamentos já vou iniciar um objecto com a "lista" que acabamos de buscar na linha de cima onde tem var departments;
             return View(viewModel); // Feito isto vou passar este objecto ViewModel para minha View
@@ -90,25 +92,25 @@ namespace Vendas_MVC.Controllers
 
 
 
-        public IActionResult Create(Seller seller) // Como eu faço para incluir aqui um teste para testar se esse (Seller seller) é valido ou não? vou ter que incluir abaixo um "if"
+        public async Task<IActionResult> Create(Seller seller) // Como eu faço para incluir aqui um teste para testar se esse (Seller seller) é valido ou não? vou ter que incluir abaixo um "if"
         {
             if (!ModelState.IsValid) // Este teste aqui serve para testar se o modelo foi validado, se ele nao foi validado, simplesmente vou retornar a mesma View(tela) que é o create, repassando o meu objecto (seller);
             {
-                var departments = _departmentService.FindAll(); // carreguei aqui os departamentos
+                var departments = await _departmentService.FindAllAsync(); // carreguei aqui os departamentos
                 var viewModel = new SellerFormViewModel { Seller = seller, Departments = departments }; // Aqui o atributo departments vai ser a lista dos departments que eu carreguei
                 return View(viewModel);
             }
 
 
             // Agora vamos implementar aqui a accao de inserir o create(Seller seller) no banco de dados;
-            _sellerService.Insert(seller); // Aqui chamamos o metodo que criamos no "SellerService", repassando este objecto(seller).
+            await _sellerService.InsertAsync(seller); // Aqui chamamos o metodo que criamos no "SellerService", repassando este objecto(seller).
             return RedirectToAction(nameof(Index)); // Agora vou redirecionar a minha requesição para accao "Index" que é a accao que vai mostrar novamente a tela principal do meu "CRUD" de vendedores
         }
 
 
 
 
-        public IActionResult Delete(int? id) // Este delete vai ser opcional e para isso vou ter que testar
+        public async Task<IActionResult> Delete(int? id) // Este delete vai ser opcional e para isso vou ter que testar
         {
             if (id == null)
             {
@@ -131,7 +133,7 @@ namespace Vendas_MVC.Controllers
 
 
             // Proximo passo é pegar quem é este objecto que eu estou mandando deletar
-            var obj = _sellerService.FindById(id.Value); // Pronto, busquei do banco de dados 
+            var obj =await _sellerService.FindByIdAsync(id.Value); // Pronto, busquei do banco de dados 
             if (obj == null)// Agora esse id pode ser um id que nao existe, se nao exisir o meu FindById torna Nullo
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not found" });
@@ -151,9 +153,9 @@ namespace Vendas_MVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            _sellerService.Remove(id);
+           await _sellerService.RemoveAsync(id);
             return RedirectToAction(nameof(Index));
         }
 
@@ -166,14 +168,14 @@ namespace Vendas_MVC.Controllers
         /* A logica aqui vai ser identica á logica do Remove, porque vou ter que verificar se o "Id" é null,
            depois buscar o meu objecto se ele for null, terei que tambem dar um "NotFound" e depois eu irei retornar o objecto*/
 
-        public IActionResult Details(int? id) // o ? quer dizer que é um "id" opcional
+        public async Task<IActionResult> Details(int? id) // o ? quer dizer que é um "id" opcional
         {
             if (id == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not provided" });
             }
 
-            var obj = _sellerService.FindById(id.Value);
+            var obj =await _sellerService.FindByIdAsync(id.Value);
             if (obj == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not found" });
@@ -186,7 +188,7 @@ namespace Vendas_MVC.Controllers
 
         // Agora vamos criar uma acção "Edit" serve para abrir a tela para editar o nosso vendedor e recebe um id como argumento e o opcional é só para evitar de acontecer algum erro de execução porque na verdade o id é obrigatorio
 
-        public IActionResult Edit(int? id )
+        public async Task<IActionResult> Edit(int? id )
         {
             if( id == null) // Aqui testei se o "id" nao existe
             {
@@ -197,7 +199,7 @@ namespace Vendas_MVC.Controllers
 
             // Agor é testar se realmente esse "id" existe ou nao no nosso Banco de dados
 
-            var obj = _sellerService.FindById(id.Value); // passando este "id" como argumento.
+            var obj =await _sellerService.FindByIdAsync(id.Value); // passando este "id" como argumento.
             if (obj == null) // Agora vou testar se obj que eu tentei buscar for igual a null é pk o "id" não existia no banco de dados, entao tabem irei mandar retornar o NotFound
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not found" });
@@ -207,7 +209,7 @@ namespace Vendas_MVC.Controllers
 
             // se as anteriores condições passarem entao é porque vou ter que abrir uma tela de edição e par aisso vou ter que carregar os departamentos para povoar a minha caixa de eleição
 
-            List<Department> departments = _departmentService.FindAll();
+            List<Department> departments =await _departmentService.FindAllAsync();
 
             //Agora vou criar um objecto do tipo SellerFormViewModel e depois vou passar os dados para ele, o "Seller agora vai ser iniciado com o "obj" que é o objecto(na linha acima " var obj= _sellerService.FindById(id.Value); " que buscamos no banco de dados.
             // O Departments vai ser igual a esta lista de departments que acabei de carregar
@@ -223,12 +225,12 @@ namespace Vendas_MVC.Controllers
         /* Criar a accao "Edit" para o metodo POST*/
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, Seller seller)
+        public async Task<IActionResult> Edit(int id, Seller seller)
         {
 
             if (!ModelState.IsValid) // Este teste aqui serve para testar se o modelo foi validado, se ele nao foi validado, simplesmente vou retornar a mesma View(tela) que é o create, repassando o meu objecto (seller);
             {
-                var departments = _departmentService.FindAll(); // carreguei aqui os departamentos
+                var departments =await _departmentService.FindAllAsync(); // carreguei aqui os departamentos
                 var viewModel = new SellerFormViewModel { Seller = seller, Departments = departments }; // Aqui o atributo departments vai ser a lista dos departments que eu carreguei
                 return View(viewModel);
             }
@@ -243,7 +245,7 @@ namespace Vendas_MVC.Controllers
 
             try // a chamada está sendo colocada dentro de um "try"
             {
-                _sellerService.Update(seller); // Aqui a chamada do update ela pode lançar excepções, tanto um NotFoundException quanto um DbConcurrencyException
+               await _sellerService.UpdateAsync(seller); // Aqui a chamada do update ela pode lançar excepções, tanto um NotFoundException quanto um DbConcurrencyException
                 return RedirectToAction(nameof(Index));
             }
 

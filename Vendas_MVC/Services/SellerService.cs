@@ -39,22 +39,26 @@ namespace Vendas_MVC.Services
 
         // Implementar a nossa Operação FindAll para retornar uma lista com todos os vendedores do banco de dados
 
-        public List<Seller> FindAll()
+        public async Task<List<Seller>> FindAllAsync()
 
         {
             // uma operação para retornar do banco de dados tds os vendedores, basta fazer o seguinte:
-            return _context.Seller.ToList(); // Isto aqui vai acessar a minha fonte de dados relacionado com a tabela de vendedores e converter isso para uma lista
+            return await _context.Seller.ToListAsync(); // Isto aqui vai acessar a minha fonte de dados relacionado com a tabela de vendedores e converter isso para uma lista
 
 
             // NOta: por enquanto isto vai ser uma operação sincrona -> ou seja, _context.Seller.ToList vai rodar o acesso ao banco de dados e a aplicação vai ficar bloqueada esperando essa operação terminar
 
         }
 
-        public void Insert(Seller obj) // Aqui criamos um metodo para inserir um novo vendedor no banco de dados
+
+
+
+
+        public async Task InsertAsync(Seller obj) // Aqui criamos um metodo para inserir um novo vendedor no banco de dados
         {
          //   obj.Department = _context.Department.First(); // solução provisória só para nao dar erro quando tentar inserir mais um vendedor por causa do DepartmentId que está acusando null na db e assim vai buscar o DepartmentId=1
             _context.Add(obj);
-            _context.SaveChanges();
+           await _context.SaveChangesAsync(); // Esta operação é que vai aceder ao banco de dados, entao nela é que deve ter a versao assincrona(async)
         }
 
 
@@ -62,11 +66,11 @@ namespace Vendas_MVC.Services
 
 
 
-        public Seller FindById(int id) // Vai ter que retornar o vendedor que possui esse id que está dentro parenteses nesta linha
+        public async Task<Seller> FindByIdAsync(int id) // Vai ter que retornar o vendedor que possui esse id que está dentro parenteses nesta linha
 
         {
             //CHAMAMOS a operação LINQ FirstOrDefault daquele objecto obj cujo obj.id seja igual ao id que eu estou informando como parametro a seguir a funcao "FindById"
-            return _context.Seller.Include(obj => obj.Department).FirstOrDefault(obj => obj.Id == id); /* Isto aqui por padrao carrega simplesmente o "Id" do Vendedor
+            return await _context.Seller.Include(obj => obj.Department).FirstOrDefaultAsync(obj => obj.Id == id); /* Isto aqui por padrao carrega simplesmente o "Id" do Vendedor
                                                                             Para carregar o departamento junto, eu vou ter que dar uma instrução
                                                                              especifica aqui para o meu EntityFramework para ele fazer o Join das tabelas,
                                                                               ou seja, para ele buscar tambem o departamento.
@@ -80,13 +84,16 @@ namespace Vendas_MVC.Services
 
 
 
-        public void Remove(int id)
+
+
+
+        public async Task RemoveAsync(int id)
         {
 
             /* Vou fazer aqui uma implementação da seguinte maneira: 1 vou pegar o objecto (obj) chamando o _context.Seller.Find passando o id para dentro do parenteses */
-            var obj = _context.Seller.Find(id);
+            var obj =await _context.Seller.FindAsync(id);
             _context.Seller.Remove(obj); // Com o objecto na mao eu vou chamar o _context.Seller. remove do nosso DbSet, entao vou falar para remover esse objecto (obj) do dbSet 
-            _context.SaveChanges(); // Agora tenho que confirmar essa alteração para o EntityFramework efectiva-la lá no db
+            await _context.SaveChangesAsync(); // Agora tenho que confirmar essa alteração para o EntityFramework efectiva-la lá no db
         }
 
 
@@ -101,7 +108,7 @@ namespace Vendas_MVC.Services
 
 
         // Agora vamos incluir uma operação "Update" , no caso um objecto do tipo "Seller"
-        public void Update(Seller obj) /* o que é que vai ser "Update" um objecto do tipo Seller?
+        public async Task UpdateAsync(Seller obj) /* o que é que vai ser "Update" um objecto do tipo Seller?
                                           A primeira coisa que vou ter que fazer é testar se esse "id" desse objecto já existe no banco.
                                            Porque como estou atualizando o "id" desse objecto, já tem que existir*/
 
@@ -112,7 +119,10 @@ namespace Vendas_MVC.Services
 
 
         {
-            if (!_context.Seller.Any(x => x.Id == obj.Id)) // Se nao existir vou ter que lançar uma excepção
+            // Aqui o bool hasAny --> quer se tem algum e depois receberá a chamada
+            bool hasAny =await _context.Seller.AnyAsync(x => x.Id == obj.Id);
+
+            if (!hasAny) // Se nao existir vou ter que lançar uma excepção
             {
                 throw new NotFoundException(" I did not found");
             }
@@ -128,13 +138,14 @@ namespace Vendas_MVC.Services
             try
             {
                 _context.Update(obj);
-                _context.SaveChanges();
+               await _context.SaveChangesAsync();
             }
             catch(DbUpdateConcurrencyException e)
             {
                 throw new DbConcurrencyException(e.Message);
             }
             
+            // Fuck
 
 
 
